@@ -81,7 +81,7 @@ if user_query := st.chat_input("Ask a question about the book..."):
         response_placeholder = st.empty()
         with st.spinner("Searching deep index boundaries..."):
             # Invoke the pipeline directly
-            answer = rag_chain.invoke(user_query)
+            answer = rag_chain.invoke({"input":user_query})
             response_placeholder.markdown(answer)
             
     st.session_state.messages.append({"role": "assistant", "content": answer})
