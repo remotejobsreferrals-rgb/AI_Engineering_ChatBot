@@ -4,9 +4,9 @@ import chromadb
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_groq import ChatGroq
-from langchain.chains.retrieval import create_retrieval_chain
-from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
 
 st.set_page_config(page_title="AI Book Concierge", page_icon="📚", layout="centered")
 st.title("📚 Comprehensive 900-Page Book Assistant")
@@ -36,8 +36,10 @@ def load_cloud_vector_store():
 vectorstore = load_cloud_vector_store()
 retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
+# Using stable Llama model via Groq
 llm = ChatGroq(model="llama-3.3-70b-specdec", temperature=0.1, groq_api_key=groq_api_key)
 
+# Strict Grounded System Prompt
 system_prompt = (
     "You are a highly precise AI assistant trained on a 900-page comprehensive handbook volume.\n"
     "Analyze the provided retrieved context snippets carefully to format your final answer.\n"
@@ -51,9 +53,18 @@ prompt = ChatPromptTemplate.from_messages([
     ("human", "{input}"),
 ])
 
-question_answer_chain = create_stuff_documents_chain(llm, prompt)
-rag_chain = create_retrieval_chain(retriever, question_answer_chain)
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
 
+# Clean, modern LCEL RAG Chain (No deprecated legacy chain wrappers)
+rag_chain = (
+    {"context": retriever | format_docs, "input": RunnablePassthrough()}
+    | prompt
+    | llm
+    | StrOutputParser()
+)
+
+# Interactive Chat Framework Logs 
 if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "assistant", "content": "Hello! I have indexed the entire 900-page textbook volume. Ask me anything!"}]
 
@@ -69,8 +80,8 @@ if user_query := st.chat_input("Ask a question about the book..."):
     with st.chat_message("assistant"):
         response_placeholder = st.empty()
         with st.spinner("Searching deep index boundaries..."):
-            response = rag_chain.invoke({"input": user_query})
-            answer = response["answer"]
+            # Invoke the pipeline directly
+            answer = rag_chain.invoke(user_query)
             response_placeholder.markdown(answer)
             
     st.session_state.messages.append({"role": "assistant", "content": answer})
