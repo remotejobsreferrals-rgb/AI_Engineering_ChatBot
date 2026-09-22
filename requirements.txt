@@ -4,5 +4,7 @@ langchain-groq
 langchain-huggingface
 langchain-chroma
 chromadb
+torch
+torchvision
 sentence-transformers
 pypdf
