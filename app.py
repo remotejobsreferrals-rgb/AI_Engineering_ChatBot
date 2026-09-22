@@ -8,9 +8,9 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 
-st.set_page_config(page_title="AI Book Concierge", page_icon="📚", layout="centered")
-st.title("📚 Comprehensive 900-Page Book Assistant")
-st.write("Query deep context across the entire book knowledge base instantly.")
+st.set_page_config(page_title="AI Engineering", page_icon="📚", layout="centered")
+st.title("📚 AI Engineering Book Assistant")
+st.write("Ask any question based on AI Engineering Book - chip hugen")
 
 groq_api_key = os.environ.get("GROQ_API_KEY")
 chroma_api_key = os.environ.get("CHROMA_API_KEY")
@@ -25,11 +25,11 @@ def load_cloud_vector_store():
     chroma_client = chromadb.CloudClient(
         api_key=chroma_api_key,
         tenant="5a13dadc-ed22-41d1-9fd5-75981663a42c", # Your exact cloud UUID
-        database="default-database"
+        database="AI_Engineering"
     )
     return Chroma(
         client=chroma_client,
-        collection_name="large-book-index",
+        collection_name="AI_Engineering_Book",
         embedding_function=embeddings
     )
 
