@@ -37,7 +37,7 @@ vectorstore = load_cloud_vector_store()
 retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
 # Using stable Llama model via Groq
-llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.2, groq_api_key=groq_api_key)
+llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.2, groq_api_key=groq_api_key)
 
 # Strict Grounded System Prompt
 system_prompt = (
