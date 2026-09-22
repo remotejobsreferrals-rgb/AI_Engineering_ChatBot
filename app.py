@@ -58,7 +58,9 @@ def format_docs(docs):
 
 # Clean, modern LCEL RAG Chain (No deprecated legacy chain wrappers)
 rag_chain = (
-    {"context": retriever | format_docs, "input": RunnablePassthrough()}
+    {"context": (lambda x: x["input"]) | retriever | format_docs, 
+     "input": lambda x: x["input"]
+    }
     | prompt
     | llm
     | StrOutputParser()
