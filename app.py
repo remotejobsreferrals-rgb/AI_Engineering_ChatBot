@@ -1,4 +1,4 @@
-pythonimport os
+import os
 import streamlit as st
 import chromadb
 from langchain_community.embeddings import HuggingFaceEmbeddings
